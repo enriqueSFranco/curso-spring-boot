@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/customers")
 public class CustomerController {
 
     private List<Customer> customers = new ArrayList<>(List.of(
@@ -19,12 +20,12 @@ public class CustomerController {
             new Customer(5, "Ethan", "ethan654", "pass5")
     ));
 
-    @GetMapping("/customers")
+    @GetMapping
     public List<Customer> getCustomers() {
         return customers;
     }
 
-    @GetMapping("/customers/{name}")
+    @GetMapping("/{name}")
     private ResponseEntity<Customer> getCustomerByName(@PathVariable String name) {
         if (name == null || name.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -36,10 +37,48 @@ public class CustomerController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/customers")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Customer postCustomer(@RequestBody Customer customer) {
         this.customers.add(customer);
         return customer;
+    }
+
+
+    @PutMapping
+    public ResponseEntity<Customer> putCustomer(@RequestBody Customer updatedCustomer) {
+        for (Customer c : customers) {
+            if (c.getID() == updatedCustomer.getID()) {
+                c.setName(updatedCustomer.getName());
+                c.setUsername(updatedCustomer.getUsername());
+                c.setPassword(updatedCustomer.getPassword());
+                return ResponseEntity.ok(c);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<Customer> patchCustomer(@RequestBody Customer patch) {
+        for (Customer c : customers) {
+            if (c.getID() == patch.getID()) {
+                if (patch.getName() != null) c.setName(patch.getName());
+                if (patch.getUsername() != null) c.setUsername(patch.getUsername());
+                if (patch.getPassword() != null) c.setPassword(patch.getPassword());
+                return ResponseEntity.ok(c);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Customer> deleteCustomer(@PathVariable int id) {
+        for (Customer c : customers) {
+            if (c.getID() == id) {
+                customers.remove(c);
+                return ResponseEntity.ok(c);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }
