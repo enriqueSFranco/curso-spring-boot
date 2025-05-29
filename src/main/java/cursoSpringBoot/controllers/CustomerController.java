@@ -20,12 +20,17 @@ public class CustomerController {
             new Customer(5, "Ethan", "ethan654", "pass5")
     ));
 
-    @GetMapping
-    public List<Customer> getCustomers() {
-        return customers;
+    @RequestMapping(method = RequestMethod.GET)
+    // @GetMapping
+    public ResponseEntity<List<Customer>> getCustomers() {
+        if (this.customers.isEmpty()) {
+            return ResponseEntity.noContent().build(); // HTTP 204 No Content
+        }
+        return ResponseEntity.ok(customers); // HTTP 200 OK con la lista
     }
 
-    @GetMapping("/{name}")
+    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
+    //@GetMapping("/{name}")
     private ResponseEntity<Customer> getCustomerByName(@PathVariable String name) {
         if (name == null || name.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
