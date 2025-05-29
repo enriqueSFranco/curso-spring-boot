@@ -1,10 +1,10 @@
 package courseSpringBoot.domain;
 
 public class Student {
-    private int ID;
+    private Integer ID;
     private String name;
     private String email;
-    private int age;
+    private Integer age;
     private String course;
 
     public Student(int ID, String name, String email, int age, String course) {

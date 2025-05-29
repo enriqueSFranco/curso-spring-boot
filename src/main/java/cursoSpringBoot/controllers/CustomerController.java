@@ -1,29 +1,31 @@
 package cursoSpringBoot.controllers;
 
 import cursoSpringBoot.domain.Customer;
+import cursoSpringBoot.dto.ApiResponse;
+import cursoSpringBoot.services.CustomersServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
 
-    private List<Customer> customers = new ArrayList<>(List.of(
-            new Customer(1, "Alice", "alice123", "pass1"),
-            new Customer(2, "Bob", "bob456", "pass2"),
-            new Customer(3, "Charlie", "charlie789", "pass3"),
-            new Customer(4, "Diana", "diana321", "pass4"),
-            new Customer(5, "Ethan", "ethan654", "pass5")
-    ));
+    private CustomersServiceImpl serviceCustomers = new CustomersServiceImpl();
 
     @RequestMapping(method = RequestMethod.GET)
     // @GetMapping
     public ResponseEntity<List<Customer>> getCustomers() {
-        if (this.customers.isEmpty()) {
+        List<Customer> customers = Optional
+                .ofNullable(this.serviceCustomers.getCustomers())
+                .orElse(Collections.emptyList());
+        if (customers.isEmpty()) {
             return ResponseEntity.noContent().build(); // HTTP 204 No Content
         }
         return ResponseEntity.ok(customers); // HTTP 200 OK con la lista
@@ -31,59 +33,69 @@ public class CustomerController {
 
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     //@GetMapping("/{name}")
-    private ResponseEntity<Customer> getCustomerByName(@PathVariable String name) {
+    private ResponseEntity<ApiResponse<Customer>> getCustomerByName(@PathVariable String name) {
         if (name == null || name.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, "El nombre no puede estar vacío"));
         }
-        return customers.stream()
+        return this.serviceCustomers.getCustomers().stream()
                 .filter(c -> c.getName() != null && c.getName().equalsIgnoreCase(name.trim()))
                 .findFirst()
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(c -> ResponseEntity.ok(new ApiResponse<>(c, "Cliente encontrado")))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(null, "El cliente " + name + " no se encontro")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Customer postCustomer(@RequestBody Customer customer) {
-        this.customers.add(customer);
-        return customer;
+    public ResponseEntity<ApiResponse<Customer>> postCustomer(@RequestBody Customer customer) {
+        this.serviceCustomers.getCustomers().add(customer);
+        // agregando la URI a la respuesta http
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest() // obtiene la informacion de la uri
+                .path("/{name}") // agrega un segmento a la uri base
+                .buildAndExpand(customer.getName())
+                .toUri();
+
+        return ResponseEntity.created(location).body(new ApiResponse<>(customer, "El cliente" + customer.getName() +" fue creado exitosamente"));
+
+        // return ResponseEntity.created(location).build();
+//        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(customer, "El cliente" + customer.getName() +" fue creado exitosamente"));
     }
 
 
     @PutMapping
-    public ResponseEntity<Customer> putCustomer(@RequestBody Customer updatedCustomer) {
-        for (Customer c : customers) {
+    public ResponseEntity<ApiResponse<Customer>> putCustomer(@RequestBody Customer updatedCustomer) {
+        for (Customer c : this.serviceCustomers.getCustomers()) {
             if (c.getID() == updatedCustomer.getID()) {
                 c.setName(updatedCustomer.getName());
                 c.setUsername(updatedCustomer.getUsername());
                 c.setPassword(updatedCustomer.getPassword());
-                return ResponseEntity.ok(c);
+                return ResponseEntity.noContent().build(); // respuesta simplificada sin mensaje personaliado
             }
         }
         return ResponseEntity.notFound().build();
     }
 
     @PatchMapping
-    public ResponseEntity<Customer> patchCustomer(@RequestBody Customer patch) {
-        for (Customer c : customers) {
+    public ResponseEntity<ApiResponse<Customer>> patchCustomer(@RequestBody Customer patch) {
+        for (Customer c : this.serviceCustomers.getCustomers()) {
             if (c.getID() == patch.getID()) {
                 if (patch.getName() != null) c.setName(patch.getName());
                 if (patch.getUsername() != null) c.setUsername(patch.getUsername());
                 if (patch.getPassword() != null) c.setPassword(patch.getPassword());
-                return ResponseEntity.ok(c);
+                return ResponseEntity.noContent().build();
             }
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(null, "El cliente " + patch.getName() + " no se encontro"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Customer> deleteCustomer(@PathVariable int id) {
-        for (Customer c : customers) {
+    public ResponseEntity<ApiResponse<Customer>> deleteCustomer(@PathVariable int id) {
+        for (Customer c : this.serviceCustomers.getCustomers()) {
             if (c.getID() == id) {
-                customers.remove(c);
-                return ResponseEntity.ok(c);
+                this.serviceCustomers.getCustomers().remove(c);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse<>(c, "Cliente eliminado correctamente"));
             }
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(null, "El cliente con ID=" + id + " no se encontro"));
     }
 }
