@@ -1,6 +1,7 @@
 package cursoSpringBoot.services;
 
 import cursoSpringBoot.domain.Product;
+import cursoSpringBoot.utils.BeanNames;
 import cursoSpringBoot.utils.TextUtils;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +10,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 
-@Service
-public class ProductsServiceImpl implements ProductService {
+@Service(BeanNames.IN_MEMORY_SERVICE)
+public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final static double DEFAULT_TOLERANCE = 0.001;
     private List<Product> shoppingCart = new ArrayList<>(List.of(
             new Product("Laptop", 1200.0, 5),

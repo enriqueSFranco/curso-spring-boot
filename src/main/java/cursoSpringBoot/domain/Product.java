@@ -46,4 +46,9 @@ public class Product {
     public void setStock(Integer stock) {
         this.stock = stock;
     }
+
+    @Override
+    public String toString() {
+        return "Person{ID=" + this.ID +", name=" + this.name + ", price=" + this.price + ", stock=" + this.stock + "}";
+    }
 }
