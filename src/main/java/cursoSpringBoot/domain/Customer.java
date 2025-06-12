@@ -2,7 +2,7 @@ package cursoSpringBoot.domain;
 
 // Clase POJO
 public class Customer {
-    private int ID;
+    private Integer ID;
     private String name;
     private String username;
     private String password;

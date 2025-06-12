@@ -1,0 +1,62 @@
+[
+  {
+    "ID": 1001,
+    "name": "iPhone 15 Pro Max 256GB - Titanio",
+    "price": 29999.00,
+    "stock": 15
+  },
+  {
+    "ID": 1002,
+    "name": "Sofá Reclinable 3 Plazas de Piel - Chocolate",
+    "price": 18999.00,
+    "stock": 8
+  },
+  {
+    "ID": 1003,
+    "name": "Reloj Fossil Híbrido Smartwatch para Caballero",
+    "price": 4699.00,
+    "stock": 22
+  },
+  {
+    "ID": 1004,
+    "name": "Lavadora Samsung Carga Frontal 20 kg Inverter",
+    "price": 19999.00,
+    "stock": 5
+  },
+  {
+    "ID": 1005,
+    "name": "Perfume Dior Sauvage Eau de Parfum 100 ml",
+    "price": 3290.00,
+    "stock": 40
+  },
+  {
+    "ID": 1006,
+    "name": "Tenis Nike Air Max 270 Hombre - Negro",
+    "price": 3299.00,
+    "stock": 30
+  },
+  {
+    "ID": 1007,
+    "name": "Bolso Michael Kors Jet Set Grande - Negro",
+    "price": 5499.00,
+    "stock": 12
+  },
+  {
+    "ID": 1008,
+    "name": "Colchón Sealy Ortopédico Queen Size",
+    "price": 14499.00,
+    "stock": 6
+  },
+  {
+    "ID": 1009,
+    "name": "Pantalla LG OLED 55'' 4K Smart TV",
+    "price": 22999.00,
+    "stock": 10
+  },
+  {
+    "ID": 1010,
+    "name": "Licuadora Vitamix Explorian Series E310",
+    "price": 9999.00,
+    "stock": 18
+  }
+]
